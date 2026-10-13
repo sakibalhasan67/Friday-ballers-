@@ -3,1102 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>শুক্রবার ফুটবল ক্লাব - Match & Player Bio Tracker</title>
-    <!-- Tailwind CSS CDN -->
+    <title>শুক্রবার ফুটবল ক্লাব - Match Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Font (Hind Siliguri for Bengali) -->
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        pitch: {
-                            900: '#062016',
-                            800: '#064e3b',
-                            700: '#047857',
-                            600: '#059669',
-                            500: '#10b981',
-                            accent: '#f59e0b',
-                            neon: '#10b981',
-                            dark: '#0b1320'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Hind Siliguri', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Hind Siliguri', sans-serif;
-            background-color: #080f1a;
-            color: #f1f5f9;
-        }
-        .grass-gradient {
-            background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
-        }
-        .gold-gradient {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        }
-        .card-bg {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0b1320;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #059669;
-            border-radius: 4px;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #0f172a; color: #f8fafc; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col pb-12">
-
-    <header class="sticky top-0 z-40 grass-gradient border-b border-emerald-600/30 shadow-xl">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="w-11 h-11 rounded-2xl gold-gradient flex items-center justify-center shadow-lg text-slate-950 font-bold text-xl">
-                    <i class="fa-solid fa-futbol text-2xl text-slate-950"></i>
+<body class="bg-slate-900 text-slate-100 min-h-screen pb-12">
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50 shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-500 text-slate-950 p-2.5 rounded-xl font-bold text-xl shadow-lg shadow-emerald-500/20">
+                    <i class="fa-solid fa-futbol"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl md:text-2xl font-bold text-white tracking-wide leading-tight">শুক্রবার ফুটবল ক্লাব</h1>
-                    <p class="text-xs text-emerald-300 font-medium">Friday Friends Match & Player Bio Tracker</p>
-                </div>
-            </div>
-            
-            <div class="flex items-center space-x-2">
-                <!-- Instructions / Help Button -->
-                <button onclick="openHelpModal()" class="bg-slate-800/80 hover:bg-slate-700 text-amber-400 border border-amber-500/30 text-xs px-3 py-2 rounded-xl flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-circle-question text-sm"></i>
-                    <span class="hidden sm:inline">কিভাবে চালাবেন?</span>
-                </button>
-                <!-- Quick Stats -->
-                <div class="hidden md:flex items-center space-x-4 text-xs bg-slate-900/80 px-3.5 py-2 rounded-xl border border-emerald-500/20">
-                    <div><span class="text-slate-400">প্লেয়ার:</span> <strong id="headerTotalPlayers" class="text-emerald-400 font-bold">0</strong></div>
-                    <div><span class="text-slate-400">ম্যাচ:</span> <strong id="headerTotalMatches" class="text-amber-400 font-bold">0</strong></div>
+                    <h1 class="text-xl font-bold text-white">Friday Football Club</h1>
+                    <p class="text-xs text-slate-400">Match Tracker & Player Stats</p>
                 </div>
             </div>
         </div>
     </header>
 
-    <div class="max-w-7xl mx-auto px-4 mt-6 w-full">
-        <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-3">
-            <button onclick="switchTab('leaderboard')" id="tab-leaderboard" class="tab-btn px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-all duration-200 flex items-center space-x-2 bg-emerald-600 text-white shadow-lg">
-                <i class="fa-solid fa-trophy text-amber-300"></i>
-                <span>লিডারবোর্ড (Leaderboard)</span>
-            </button>
-            <button onclick="switchTab('players')" id="tab-players" class="tab-btn px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold text-slate-300 hover:bg-slate-800 transition-all duration-200 flex items-center space-x-2">
-                <i class="fa-solid fa-users text-emerald-400"></i>
-                <span>প্লেয়ার প্রোফাইল (Players)</span>
-            </button>
-            <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold text-slate-300 hover:bg-slate-800 transition-all duration-200 flex items-center space-x-2">
-                <i class="fa-solid fa-list-check text-blue-400"></i>
-                <span>ম্যাচ হিস্ট্রি (Match History)</span>
-            </button>
-            <button onclick="switchTab('new-match')" id="tab-new-match" class="tab-btn px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold text-slate-300 hover:bg-slate-800 transition-all duration-200 flex items-center space-x-2 border border-emerald-500/30 text-emerald-300">
-                <i class="fa-solid fa-circle-plus text-emerald-400"></i>
-                <span>নতুন ম্যাচ রেকর্ড (Add Match)</span>
-            </button>
-            <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn px-4 py-2.5 rounded-xl text-xs md:text-sm font-semibold text-slate-300 hover:bg-slate-800 transition-all duration-200 flex items-center space-x-2 ml-auto">
-                <i class="fa-solid fa-sliders text-purple-400"></i>
-                <span>ডাটা ও কাস্টমাইজেশন</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- MAIN CONTENT CONTAINERS -->
-    <main class="max-w-7xl mx-auto px-4 mt-6 w-full flex-grow">
-
-        <section id="view-leaderboard" class="tab-content space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-crown text-amber-400"></i> সেরা প্লেয়ার র‍্যাঙ্কিং
-                    </h2>
-                    <p class="text-xs text-slate-400 mt-1">আপনার ফ্রাইডে ক্লাবের স্কোয়াড পারফরম্যান্স র‍্যাঙ্কিং</p>
-                </div>
-                <div class="flex items-center space-x-2 bg-slate-900/90 p-1.5 rounded-xl border border-slate-800">
-                    <span class="text-xs text-slate-400 px-2 font-medium">সর্ট করুন:</span>
-                    <button onclick="setLeaderboardSort('wins')" id="sort-wins" class="sort-btn text-xs font-medium px-3 py-1.5 rounded-lg bg-emerald-600 text-white transition">জয় (Wins)</button>
-                    <button onclick="setLeaderboardSort('goals')" id="sort-goals" class="sort-btn text-xs font-medium px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">গোল (Goals)</button>
-                    <button onclick="setLeaderboardSort('winrate')" id="sort-winrate" class="sort-btn text-xs font-medium px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">উইন % (Win %)</button>
-                </div>
-            </div>
-
-            <!-- Top 3 Podium Container -->
-            <div id="podium-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"></div>
-
-            <!-- Leaderboard Table -->
-            <div class="card-bg rounded-2xl overflow-hidden shadow-2xl border border-slate-800">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-900/90 text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800">
-                                <th class="py-3.5 px-4 text-center">#</th>
-                                <th class="py-3.5 px-4">প্লেয়ার (Player)</th>
-                                <th class="py-3.5 px-4 text-center">পজিশন</th>
-                                <th class="py-3.5 px-4 text-center">ম্যাচ</th>
-                                <th class="py-3.5 px-4 text-center">জয় (W)</th>
-                                <th class="py-3.5 px-4 text-center">গোল (G)</th>
-                                <th class="py-3.5 px-4 text-center">অ্যাসিস্ট (A)</th>
-                                <th class="py-3.5 px-4 text-center">উইন রেট %</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leaderboard-body" class="divide-y divide-slate-800/60 text-sm"></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-players" class="tab-content hidden space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-users text-emerald-400"></i> বন্ধুদের প্লেয়ার বায়ো ও প্রোফাইল
-                    </h2>
-                    <p class="text-xs text-slate-400 mt-1">সব বন্ধুদের নাম, বায়ো, পজিশন ও পার্সোনাল স্ট্যাটস</p>
-                </div>
-                <button onclick="openAddPlayerModal()" class="gold-gradient hover:opacity-90 text-slate-950 font-bold text-sm px-4 py-2.5 rounded-xl shadow-lg flex items-center justify-center space-x-2 transition">
-                    <i class="fa-solid fa-user-plus"></i>
-                    <span>নতুন প্লেয়ার যোগ করুন</span>
-                </button>
-            </div>
-
-            <div id="players-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-        </section>
-
-        <section id="view-matches" class="tab-content hidden space-y-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-history text-blue-400"></i> শুক্রবারের ম্যাচ রেকর্ডসমূহ
-                    </h2>
-                    <p class="text-xs text-slate-400 mt-1">পূর্বের সকল ম্যাচের স্কোরলাইন ও গোলদাতার তালিকা</p>
-                </div>
-            </div>
-
-            <div id="matches-list" class="space-y-4"></div>
-        </section>
-
-        <section id="view-new-match" class="tab-content hidden max-w-3xl mx-auto">
-            <div class="card-bg p-6 md:p-8 rounded-2xl shadow-2xl border border-slate-700">
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-white flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-futbol text-emerald-400"></i> শুক্রবারের ম্যাচ এন্ট্রি করুন
-                    </h2>
-                    <p class="text-xs text-slate-400 mt-1">ম্যাচ সাবমিট করলে প্লেয়ারদের জয়, গোল ও স্ট্যাটস অটো-আপডেট হবে</p>
-                </div>
-
-                <form id="addMatchForm" onsubmit="handleMatchSubmit(event)" class="space-y-6">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">ম্যাচের তারিখ (Date)</label>
-                        <input type="date" id="matchDate" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500">
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- TEAM A -->
-                        <div class="bg-slate-900/80 p-5 rounded-xl border border-emerald-500/30 space-y-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="font-bold text-emerald-400 flex items-center gap-2">
-                                    <i class="fa-solid fa-shield-halved"></i> টিম এ (Team A)
-                                </h3>
-                                <input type="text" id="teamAName" value="টিম সবুজ (Team Green)" required class="bg-slate-800 text-xs text-emerald-300 font-semibold px-2.5 py-1 rounded border border-slate-700 focus:outline-none">
-                            </div>
-
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1">প্লেয়ার সিলেক্ট করুন:</label>
-                                <div id="teamASelectContainer" class="max-h-40 overflow-y-auto space-y-1.5 p-2 bg-slate-950 rounded-lg border border-slate-800"></div>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1">টিম এ-এর মোট গোল:</label>
-                                <input type="number" id="teamAScore" min="0" value="0" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-center text-lg focus:outline-none focus:border-emerald-500">
-                            </div>
-                        </div>
-
-                        <!-- TEAM B -->
-                        <div class="bg-slate-900/80 p-5 rounded-xl border border-amber-500/30 space-y-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="font-bold text-amber-400 flex items-center gap-2">
-                                    <i class="fa-solid fa-shield-halved"></i> টিম বি (Team B)
-                                </h3>
-                                <input type="text" id="teamBName" value="টিম লাল (Team Red)" required class="bg-slate-800 text-xs text-amber-300 font-semibold px-2.5 py-1 rounded border border-slate-700 focus:outline-none">
-                            </div>
-
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1">প্লেয়ার সিলেক্ট করুন:</label>
-                                <div id="teamBSelectContainer" class="max-h-40 overflow-y-auto space-y-1.5 p-2 bg-slate-950 rounded-lg border border-slate-800"></div>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1">টিম বি-এর মোট গোল:</label>
-                                <input type="number" id="teamBScore" min="0" value="0" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-center text-lg focus:outline-none focus:border-amber-500">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Individual Goals & Assists -->
-                    <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-700 space-y-3">
-                        <h4 class="text-sm font-bold text-slate-200 flex items-center gap-2">
-                            <i class="fa-solid fa-futbol text-amber-400"></i> এই ম্যাচের গোল ও অ্যাসিস্টদাতা সিলেক্ট করুন
-                        </h4>
-                        <div id="scorersContainer" class="space-y-2">
-                            <p class="text-xs text-slate-500 italic">প্লেয়ার সিলেক্ট করা হলে এখানে অপশন দৃশ্যমান হবে...</p>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full grass-gradient hover:opacity-90 text-white font-bold py-3.5 rounded-xl shadow-lg text-base tracking-wide flex items-center justify-center space-x-2 transition">
-                        <i class="fa-solid fa-floppy-disk text-emerald-300"></i>
-                        <span>ম্যাচের ফলাফল ও স্ট্যাটস সেভ করুন</span>
-                    </button>
-                </form>
-            </div>
-        </section>
-
-        <section id="view-settings" class="tab-content hidden max-w-4xl mx-auto space-y-6">
-            <div class="card-bg p-6 rounded-2xl border border-slate-800 space-y-6">
-                <div>
-                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-sliders text-purple-400"></i> ডাটা ব্যাকআপ ও কাস্টমাইজেশন
-                    </h2>
-                    <p class="text-xs text-slate-400 mt-1">আপনার প্লেয়ার ডাটা ব্যাকআপ রাখুন অথবা এই অ্যাপের কোড ডাউনলোড করুন</p>
-                </div>
-
+    <main class="max-w-4xl mx-auto px-4 py-6">
+        <!-- Add/Edit Player with Photo Section -->
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 mb-8 shadow-xl">
+            <h2 class="text-lg font-bold text-emerald-400 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-user-plus"></i> প্লেয়ার তৈরি বা আপডেট করুন (ছবিসহ)
+            </h2>
+            <form id="playerForm" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Export JSON Data -->
-                    <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
-                        <div>
-                            <h3 class="font-bold text-white text-base mb-1 flex items-center gap-2">
-                                <i class="fa-solid fa-download text-emerald-400"></i> ডাটা এক্সপোর্ট (Export JSON)
-                            </h3>
-                            <p class="text-xs text-slate-400 mb-4">আপনার বর্তমান সব প্লেয়ার এবং ম্যাচের তথ্য একটি ফাইল হিসেবে সেভ করে রাখুন।</p>
-                        </div>
-                        <button onclick="exportJSONData()" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-semibold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center space-x-2 transition">
-                            <i class="fa-solid fa-file-export"></i>
-                            <span>JSON ডাটা ডাউনলোড করুন</span>
-                        </button>
-                    </div>
-
-                    <!-- Import JSON Data -->
-                    <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
-                        <div>
-                            <h3 class="font-bold text-white text-base mb-1 flex items-center gap-2">
-                                <i class="fa-solid fa-upload text-blue-400"></i> ডাটা ইম্পোর্ট (Import JSON)
-                            </h3>
-                            <p class="text-xs text-slate-400 mb-4">আগে থেকে ব্যাকআপ রাখা ডাটা ফাইল অ্যাপে আপলোড করে পুনরুদ্ধার করুন।</p>
-                        </div>
-                        <label class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center space-x-2 cursor-pointer transition text-center">
-                            <i class="fa-solid fa-file-import"></i>
-                            <span>JSON ব্যাকআপ ফাইল সিলেক্ট করুন</span>
-                            <input type="file" id="importFileInput" accept=".json" onchange="importJSONData(event)" class="hidden">
-                        </label>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-800">
-                    <!-- Download Web Code -->
-                    <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
-                        <div>
-                            <h3 class="font-bold text-white text-base mb-1 flex items-center gap-2">
-                                <i class="fa-solid fa-code text-amber-400"></i> ওয়েবসাইট কোড ডাউনলোড করুন
-                            </h3>
-                            <p class="text-xs text-slate-400 mb-4">এই সম্পূর্ণ অ্যাপটির `index.html` কোড ডাউনলোড করে আপনার কম্পিউটার বা ফোনে সেভ রাখুন।</p>
-                        </div>
-                        <button onclick="downloadHTMLApp()" class="w-full gold-gradient text-slate-950 font-bold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center space-x-2 shadow-lg transition">
-                            <i class="fa-solid fa-file-code"></i>
-                            <span>index.html ফাইল ডাউনলোড</span>
-                        </button>
-                    </div>
-
-                    <!-- Reset Demo Data -->
-                    <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
-                        <div>
-                            <h3 class="font-bold text-rose-400 text-base mb-1 flex items-center gap-2">
-                                <i class="fa-solid fa-arrows-rotate"></i> ডেমো ডাটা রিসেট
-                            </h3>
-                            <p class="text-xs text-slate-400 mb-4">নতুন করে আপনার বন্ধুদের সাথে শুরু করতে চাইলে আগের ডাটা ক্লিয়ার করুন।</p>
-                        </div>
-                        <button onclick="resetDataToDemo()" class="w-full bg-rose-950 hover:bg-rose-900 border border-rose-800 text-rose-300 font-semibold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center space-x-2 transition">
-                            <i class="fa-solid fa-trash-can"></i>
-                            <span>সব ডাটা রিসেট করুন</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <div id="playerModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="card-bg w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-700 relative">
-            <button onclick="closePlayerModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 id="modalTitle" class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-user-pen text-emerald-400"></i> প্লেয়ার তথ্য
-            </h3>
-            
-            <form id="playerForm" onsubmit="handlePlayerSubmit(event)" class="space-y-4">
-                <input type="hidden" id="editPlayerId" value="">
-                
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">বন্ধুর নাম (Player Name) *</label>
-                    <input type="text" id="playerName" required placeholder="যেমন: তানজিম আহমেদ" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500 text-sm">
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">পজিশন</label>
-                        <select id="playerPosition" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500 text-sm">
-                            <option value="Forward">ফরওয়ার্ড (Forward)</option>
-                            <option value="Midfielder">মিডফিল্ডার (Midfielder)</option>
-                            <option value="Defender">ডিফেন্ডার (Defender)</option>
-                            <option value="Goalkeeper">গোলকিপার (Goalkeeper)</option>
+                        <label class="block text-sm text-slate-400 mb-1">বন্ধুর নাম</label>
+                        <input type="text" id="playerName" placeholder="যেমন: সাকিব" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">পজিশন</label>
+                        <select id="playerPos" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500">
+                            <option value="Forward">Attacker / Forward</option>
+                            <option value="Midfielder">Midfielder</option>
+                            <option value="Defender">Defender</option>
+                            <option value="Goalkeeper">Goalkeeper</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">জার্সি নম্বর / নিকনেম</label>
-                        <input type="text" id="playerJersey" placeholder="#10 / CR7" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500 text-sm">
-                    </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">বায়ো (Short Bio)</label>
-                    <textarea id="playerBio" rows="2" placeholder="খেলোয়াড়ের সংক্ষিপ্ত পরিচয় লিখুন..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500 text-sm"></textarea>
-                </div>
-
-                <div class="border-t border-slate-800 pt-3">
-                    <span class="text-xs text-slate-400 block mb-2 font-medium">ম্যানুয়াল স্ট্যাটস ইনপুট (প্রয়োজনে অ্যাডজাস্ট করুন):</span>
-                    <div class="grid grid-cols-4 gap-2">
-                        <div>
-                            <label class="block text-[10px] text-slate-400">ম্যাচ</label>
-                            <input type="number" id="playerGames" min="0" value="0" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-center text-xs text-white">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-slate-400">জয় (Win)</label>
-                            <input type="number" id="playerWins" min="0" value="0" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-center text-xs text-white">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-slate-400">গোল</label>
-                            <input type="number" id="playerGoals" min="0" value="0" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-center text-xs text-white">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-slate-400">অ্যাসিস্ট</label>
-                            <input type="number" id="playerAssists" min="0" value="0" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-center text-xs text-white">
-                        </div>
+                    <label class="block text-sm text-slate-400 mb-1">ছবি আপলোড বা ছবির লিংক (Image URL)</label>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <input type="file" id="playerPhotoFile" accept="image/*" class="text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-500 file:text-slate-950 hover:file:bg-emerald-400 cursor-pointer">
+                        <span class="text-slate-500 text-sm self-center">অথবা</span>
+                        <input type="url" id="playerPhotoUrl" placeholder="https://example.com/photo.jpg" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-emerald-500">
                     </div>
                 </div>
 
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closePlayerModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">বাতিল</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold gold-gradient text-slate-950 hover:opacity-90">সেভ করুন</button>
-                </div>
+                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 rounded-xl transition shadow-lg shadow-emerald-500/20">
+                    সেভ করুন
+                </button>
             </form>
         </div>
-    </div>
 
-    <div id="helpModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="card-bg w-full max-w-2xl rounded-2xl p-6 shadow-2xl border border-slate-700 relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeHelpModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2 border-b border-slate-800 pb-3">
-                <i class="fa-solid fa-lightbulb text-amber-400"></i> অ্যাপ ব্যবহার ও কাস্টমাইজ করার নিয়ম
-            </h3>
-            
-            <div class="space-y-4 text-xs text-slate-300 leading-relaxed">
-                <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 space-y-1">
-                    <h4 class="font-bold text-emerald-400 text-sm">১. এই অ্যাপটি আপনার কাছে ডাউনলোড বা সেভ করার উপায়:</h4>
-                    <p>• <strong>ডাটা ও কাস্টমাইজেশন</strong> ট্যাবে যান এবং <strong>"index.html ফাইল ডাউনলোড"</strong> বাটনে চাপ দিন। ফাইলটি আপনার কম্পিউটার বা মোবাইল ব্রাউজারে ডাবল ক্লিক করে যেকোনো সময় সরাসরি চালু করতে পারবেন।</p>
-                </div>
-
-                <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 space-y-1">
-                    <h4 class="font-bold text-amber-400 text-sm">২. নতুন প্লেয়ারদের বায়ো ও নাম কাস্টমাইজেশন:</h4>
-                    <p>• <strong>প্লেয়ার প্রোফাইল</strong> ট্যাবে গিয়ে "নতুন প্লেয়ার যোগ করুন" বাটনে চাপ দিন। আপনার বন্ধুদের নাম, পজিশন, জার্সি নম্বর ও মজার বায়ো যোগ করুন।</p>
-                </div>
-
-                <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 space-y-1">
-                    <h4 class="font-bold text-blue-400 text-sm">৩. শুক্রবারের ম্যাচের হিসাব রাখা:</h4>
-                    <p>• <strong>নতুন ম্যাচ রেকর্ড</strong> ট্যাবে গিয়ে তারিখ, উভয় দলের বন্ধুদের নাম সিলেক্ট করুন এবং গোল সংখ্যা বসান। সাবমিট দিলে লিডারবোর্ড ও বায়ো প্লেয়ার স্ট্যাটস স্বয়ংক্রিয়ভাবে আপডেট হয়ে যাবে!</p>
-                </div>
-
-                <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 space-y-1">
-                    <h4 class="font-bold text-purple-400 text-sm">৪. বন্ধুদের সাথে লাইভ অনলাইন লিংক শেয়ার করার উপায়:</h4>
-                    <p>• <strong>GitHub Pages (ফ্রি):</strong> আপনার একটি GitHub অ্যাকাউন্ট থাকলে এই <code>index.html</code> ফাইলটি আপলোড করে "GitHub Pages" চালু করলে ২ মিনিটেই বন্ধুদের জন্য একটি ফ্রী ওয়েবসাইটের লিংক (যেমন: <code>yourname.github.io/football</code>) পেয়ে যাবেন!</p>
-                </div>
-            </div>
-
-            <div class="mt-6 flex justify-end">
-                <button onclick="closeHelpModal()" class="px-5 py-2 rounded-xl text-xs font-bold grass-gradient text-white hover:opacity-90">বুঝতে পেরেছি</button>
+        <!-- Player List Preview -->
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6">
+            <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-users"></i> আমাদের প্লেয়ার তালিকা
+            </h2>
+            <div id="playerList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Players will be rendered here dynamically -->
             </div>
         </div>
-    </div>
-
-    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
-        <div id="toast-body" class="bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 border border-emerald-400">
-            <i id="toast-icon" class="fa-solid fa-circle-check text-xl"></i>
-            <span id="toast-msg" class="font-medium text-sm">নোটিফিকেশন</span>
-        </div>
-    </div>
+    </main>
 
     <script>
-        // Default Sample Data
-        const defaultPlayers = [
-            { id: 'p1', name: 'রাফসান তানজিম', position: 'Forward', jersey: '#10', bio: 'দলনেতা ও প্রধান স্ট্রাইকার।', games: 8, wins: 6, goals: 12, assists: 4 },
-            { id: 'p2', name: 'সাকিব হাসান', position: 'Midfielder', jersey: '#8', bio: 'মাঝমাঠের কন্ট্রোলার ও প্লেমেকার।', games: 8, wins: 5, goals: 5, assists: 9 },
-            { id: 'p3', name: 'ফাহিম আহমেদ', position: 'Defender', jersey: '#4', bio: 'ডিফেন্সের বিশ্বস্ত দেয়াল।', games: 7, wins: 4, goals: 1, assists: 2 },
-            { id: 'p4', name: 'মাহমুদ জয়', position: 'Goalkeeper', jersey: '#1', bio: 'সেরা শট স্টপার ও গোলকিপার।', games: 8, wins: 5, goals: 0, assists: 1 },
-            { id: 'p5', name: 'ইমরান খান', position: 'Forward', jersey: '#7', bio: 'গতিশীল উইঙ্গার ও শুটার।', games: 6, wins: 3, goals: 6, assists: 3 }
-        ];
+        let players = JSON.parse(localStorage.getItem('ffc_players')) || [];
 
-        const defaultMatches = [
-            {
-                id: 'm1',
-                date: '2026-10-09',
-                teamA: { name: 'টিম সবুজ (Team Green)', score: 4, players: ['p1', 'p2', 'p3'] },
-                teamB: { name: 'টিম লাল (Team Red)', score: 2, players: ['p4', 'p5'] },
-                winner: 'Team A',
-                scorers: [
-                    { playerId: 'p1', goals: 3, assists: 1 },
-                    { playerId: 'p2', goals: 1, assists: 2 },
-                    { playerId: 'p5', goals: 2, assists: 0 }
-                ]
-            }
-        ];
+        const playerForm = document.getElementById('playerForm');
+        const playerList = document.getElementById('playerList');
 
-        // State Variables
-        let players = [];
-        let matches = [];
-        let currentSortKey = 'wins';
+        playerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('playerName').value.trim();
+            const pos = document.getElementById('playerPos').value;
+            const fileInput = document.getElementById('playerPhotoFile');
+            const urlInput = document.getElementById('playerPhotoUrl').value.trim();
 
-        // Window Load Initialization
-        window.onload = function() {
-            loadData();
-            document.getElementById('matchDate').value = new Date().toISOString().split('T')[0];
-            renderAll();
-        };
+            let photoUrl = 'https://ui-avatars.com/api/?background=0D9488&color=fff&name=' + encodeURIComponent(name);
 
-        function loadData() {
-            const storedPlayers = localStorage.getItem('ffc_players_v2');
-            const storedMatches = localStorage.getItem('ffc_matches_v2');
-
-            if (storedPlayers) {
-                players = JSON.parse(storedPlayers);
-            } else {
-                players = [...defaultPlayers];
-                savePlayers();
-            }
-
-            if (storedMatches) {
-                matches = JSON.parse(storedMatches);
-            } else {
-                matches = [...defaultMatches];
-                saveMatches();
-            }
-        }
-
-        function savePlayers() {
-            localStorage.setItem('ffc_players_v2', JSON.stringify(players));
-        }
-
-        function saveMatches() {
-            localStorage.setItem('ffc_matches_v2', JSON.stringify(matches));
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-lg');
-                btn.classList.add('text-slate-300');
-            });
-
-            document.getElementById(`view-${tabId}`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`tab-${tabId}`);
-            if (activeBtn) {
-                activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-lg');
-                activeBtn.classList.remove('text-slate-300');
-            }
-
-            if (tabId === 'new-match') {
-                populateTeamPlayerSelection();
-            }
-        }
-
-        function showToast(msg, isSuccess = true) {
-            const toast = document.getElementById('toast');
-            const toastBody = document.getElementById('toast-body');
-            const toastMsg = document.getElementById('toast-msg');
-            const toastIcon = document.getElementById('toast-icon');
-
-            toastMsg.textContent = msg;
-            if (isSuccess) {
-                toastBody.className = "bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 border border-emerald-400";
-                toastIcon.className = "fa-solid fa-circle-check text-xl";
-            } else {
-                toastBody.className = "bg-rose-600 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 border border-rose-400";
-                toastIcon.className = "fa-solid fa-triangle-exclamation text-xl";
-            }
-
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
-        }
-
-        function getWinRate(wins, games) {
-            if (!games || games === 0) return '0%';
-            return Math.round((wins / games) * 100) + '%';
-        }
-
-        function openHelpModal() {
-            document.getElementById('helpModal').classList.remove('hidden');
-        }
-
-        function closeHelpModal() {
-            document.getElementById('helpModal').classList.add('hidden');
-        }
-
-        function renderAll() {
-            document.getElementById('headerTotalPlayers').textContent = players.length;
-            document.getElementById('headerTotalMatches').textContent = matches.length;
-            renderLeaderboard();
-            renderPlayerCards();
-            renderMatchHistory();
-        }
-
-        function setLeaderboardSort(key) {
-            currentSortKey = key;
-            document.querySelectorAll('.sort-btn').forEach(btn => {
-                btn.classList.remove('bg-emerald-600', 'text-white');
-                btn.classList.add('text-slate-400');
-            });
-            const activeBtn = document.getElementById(`sort-${key}`);
-            if (activeBtn) {
-                activeBtn.classList.add('bg-emerald-600', 'text-white');
-                activeBtn.classList.remove('text-slate-400');
-            }
-            renderLeaderboard();
-        }
-
-        function renderLeaderboard() {
-            let sorted = [...players].sort((a, b) => {
-                if (currentSortKey === 'wins') return b.wins - a.wins || b.goals - a.goals;
-                if (currentSortKey === 'goals') return b.goals - a.goals || b.wins - a.wins;
-                if (currentSortKey === 'winrate') {
-                    const wrA = a.games ? (a.wins / a.games) : 0;
-                    const wrB = b.games ? (b.wins / b.games) : 0;
-                    return wrB - wrA || b.wins - a.wins;
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    savePlayer(name, pos, e.target.result);
                 }
-                return 0;
-            });
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                if (urlInput) photoUrl = urlInput;
+                savePlayer(name, pos, photoUrl);
+            }
+        });
 
-            // Podium
-            const podiumContainer = document.getElementById('podium-container');
-            podiumContainer.innerHTML = '';
-            const top3 = sorted.slice(0, 3);
-            const podiumOrder = [1, 0, 2];
-
-            podiumOrder.forEach((index) => {
-                const player = top3[index];
-                if (!player) return;
-
-                const rank = index + 1;
-                let badgeColor = rank === 1 ? 'from-amber-400 to-yellow-600 text-slate-950' : rank === 2 ? 'from-slate-300 to-slate-500 text-slate-950' : 'from-amber-700 to-amber-900 text-white';
-                let crown = rank === 1 ? '<i class="fa-solid fa-crown text-amber-400 text-2xl mb-1"></i>' : '';
-
-                const cardHTML = `
-                    <div class="card-bg p-5 rounded-2xl flex flex-col items-center justify-center text-center relative border border-slate-700 shadow-xl ${rank === 1 ? 'md:-translate-y-2 border-amber-500/50' : ''}">
-                        ${crown}
-                        <div class="w-14 h-14 rounded-full bg-gradient-to-tr ${badgeColor} font-black text-xl flex items-center justify-center shadow-lg mb-2">
-                            #${rank}
-                        </div>
-                        <h3 class="font-bold text-white text-base">${player.name}</h3>
-                        <p class="text-xs text-emerald-400 font-medium">${player.position} (${player.jersey || 'N/A'})</p>
-                        
-                        <div class="grid grid-cols-3 gap-2 w-full mt-4 bg-slate-900/80 p-2.5 rounded-xl text-xs border border-slate-800">
-                            <div>
-                                <span class="text-slate-400 block text-[10px]">জয়</span>
-                                <strong class="text-emerald-400 text-sm">${player.wins}</strong>
-                            </div>
-                            <div>
-                                <span class="text-slate-400 block text-[10px]">গোল</span>
-                                <strong class="text-amber-400 text-sm">${player.goals}</strong>
-                            </div>
-                            <div>
-                                <span class="text-slate-400 block text-[10px]">উইন %</span>
-                                <strong class="text-blue-400 text-sm">${getWinRate(player.wins, player.games)}</strong>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                podiumContainer.innerHTML += cardHTML;
-            });
-
-            // Table
-            const tbody = document.getElementById('leaderboard-body');
-            tbody.innerHTML = '';
-            sorted.forEach((p, idx) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/40 transition border-b border-slate-800/60";
-                tr.innerHTML = `
-                    <td class="py-3 px-4 text-center font-bold ${idx < 3 ? 'text-amber-400' : 'text-slate-400'}">${idx + 1}</td>
-                    <td class="py-3 px-4 font-semibold text-white">
-                        <div class="flex items-center space-x-2">
-                            <span>${p.name}</span>
-                            <span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded border border-slate-700">${p.jersey || '#'}</span>
-                        </div>
-                    </td>
-                    <td class="py-3 px-4 text-center text-xs text-slate-300">${p.position}</td>
-                    <td class="py-3 px-4 text-center text-slate-200 font-medium">${p.games}</td>
-                    <td class="py-3 px-4 text-center text-emerald-400 font-bold">${p.wins}</td>
-                    <td class="py-3 px-4 text-center text-amber-400 font-bold">${p.goals}</td>
-                    <td class="py-3 px-4 text-center text-blue-400">${p.assists}</td>
-                    <td class="py-3 px-4 text-center font-bold text-emerald-300">${getWinRate(p.wins, p.games)}</td>
-                `;
-                tbody.appendChild(tr);
-            });
+        function savePlayer(name, pos, photo) {
+            const newPlayer = { id: Date.now(), name, pos, photo };
+            players.push(newPlayer);
+            localStorage.setItem('ffc_players', JSON.stringify(players));
+            playerForm.reset();
+            renderPlayers();
         }
 
-        function renderPlayerCards() {
-            const grid = document.getElementById('players-grid');
-            grid.innerHTML = '';
-
+        function renderPlayers() {
+            playerList.innerHTML = '';
+            if (players.length === 0) {
+                playerList.innerHTML = `<p class="text-slate-400 text-sm col-span-full text-center">এখনো কোনো প্লেয়ার যোগ করা হয়নি।</p>`;
+                return;
+            }
             players.forEach(p => {
                 const card = document.createElement('div');
-                card.className = "card-bg p-5 rounded-2xl border border-slate-800 flex flex-col justify-between shadow-lg hover:border-emerald-500/40 transition group";
+                card.className = "bg-slate-900 border border-slate-700 rounded-xl p-4 flex items-center gap-4";
                 card.innerHTML = `
+                    <img src="${p.photo}" alt="${p.name}" class="w-14 h-14 rounded-full object-cover border-2 border-emerald-500">
                     <div>
-                        <div class="flex justify-between items-start mb-3">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-12 h-12 rounded-xl grass-gradient border border-emerald-500/40 flex items-center justify-center font-bold text-white text-lg shadow-md">
-                                    ${p.name.charAt(0)}
-                                </div>
-                                <div>
-                                    <h3 class="font-bold text-white text-base group-hover:text-emerald-300 transition">${p.name}</h3>
-                                    <span class="inline-block text-xs text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-800">${p.position}</span>
-                                </div>
-                            </div>
-                            <span class="text-xs font-bold text-amber-400 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-700">${p.jersey || '#'}</span>
-                        </div>
-                        <p class="text-xs text-slate-400 italic mb-4 min-h-[32px]">${p.bio || 'কোন বায়ো যুক্ত করা হয়নি।'}</p>
-                    </div>
-
-                    <div class="space-y-3">
-                        <div class="grid grid-cols-4 gap-1.5 bg-slate-900/90 p-2.5 rounded-xl text-center border border-slate-800">
-                            <div>
-                                <span class="text-[10px] text-slate-400 block">ম্যাচ</span>
-                                <span class="font-bold text-sm text-white">${p.games}</span>
-                            </div>
-                            <div>
-                                <span class="text-[10px] text-slate-400 block">জয়</span>
-                                <span class="font-bold text-sm text-emerald-400">${p.wins}</span>
-                            </div>
-                            <div>
-                                <span class="text-[10px] text-slate-400 block">গোল</span>
-                                <span class="font-bold text-sm text-amber-400">${p.goals}</span>
-                            </div>
-                            <div>
-                                <span class="text-[10px] text-slate-400 block">অ্যাসিস্ট</span>
-                                <span class="font-bold text-sm text-blue-400">${p.assists}</span>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between pt-1">
-                            <span class="text-xs text-slate-400">উইন রেট: <strong class="text-emerald-400">${getWinRate(p.wins, p.games)}</strong></span>
-                            <div class="flex items-center space-x-1">
-                                <button onclick="editPlayer('${p.id}')" class="p-2 text-slate-400 hover:text-emerald-400 rounded-lg hover:bg-slate-800 transition" title="সম্পাদনা">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                                <button onclick="deletePlayer('${p.id}')" class="p-2 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800 transition" title="মুছে ফেলুন">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
-                            </div>
-                        </div>
+                        <h3 class="font-bold text-white text-base">${p.name}</h3>
+                        <span class="text-xs text-emerald-400 bg-emerald-950 px-2.5 py-0.5 rounded-full border border-emerald-800">${p.pos}</span>
                     </div>
                 `;
-                grid.appendChild(card);
+                playerList.appendChild(card);
             });
         }
 
-        function openAddPlayerModal() {
-            document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-user-plus text-emerald-400"></i> নতুন প্লেয়ার যোগ করুন`;
-            document.getElementById('editPlayerId').value = '';
-            document.getElementById('playerForm').reset();
-            document.getElementById('playerModal').classList.remove('hidden');
-        }
-
-        function closePlayerModal() {
-            document.getElementById('playerModal').classList.add('hidden');
-        }
-
-        function editPlayer(id) {
-            const p = players.find(x => x.id === id);
-            if (!p) return;
-
-            document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-user-pen text-amber-400"></i> প্লেয়ার আপডেট করুন`;
-            document.getElementById('editPlayerId').value = p.id;
-            document.getElementById('playerName').value = p.name;
-            document.getElementById('playerPosition').value = p.position;
-            document.getElementById('playerJersey').value = p.jersey || '';
-            document.getElementById('playerBio').value = p.bio || '';
-            document.getElementById('playerGames').value = p.games;
-            document.getElementById('playerWins').value = p.wins;
-            document.getElementById('playerGoals').value = p.goals;
-            document.getElementById('playerAssists').value = p.assists;
-
-            document.getElementById('playerModal').classList.remove('hidden');
-        }
-
-        function handlePlayerSubmit(e) {
-            e.preventDefault();
-            const id = document.getElementById('editPlayerId').value;
-            const name = document.getElementById('playerName').value.trim();
-            const position = document.getElementById('playerPosition').value;
-            const jersey = document.getElementById('playerJersey').value.trim();
-            const bio = document.getElementById('playerBio').value.trim();
-            const games = parseInt(document.getElementById('playerGames').value) || 0;
-            const wins = parseInt(document.getElementById('playerWins').value) || 0;
-            const goals = parseInt(document.getElementById('playerGoals').value) || 0;
-            const assists = parseInt(document.getElementById('playerAssists').value) || 0;
-
-            if (id) {
-                const pIndex = players.findIndex(x => x.id === id);
-                if (pIndex !== -1) {
-                    players[pIndex] = { ...players[pIndex], name, position, jersey, bio, games, wins, goals, assists };
-                    showToast('প্লেয়ারের তথ্য আপডেট করা হয়েছে!');
-                }
-            } else {
-                const newPlayer = {
-                    id: 'p_' + Date.now(),
-                    name, position, jersey, bio, games, wins, goals, assists
-                };
-                players.push(newPlayer);
-                showToast('নতুন প্লেয়ার যুক্ত করা হয়েছে!');
-            }
-
-            savePlayers();
-            renderAll();
-            closePlayerModal();
-        }
-
-        function deletePlayer(id) {
-            if (confirm('আপনি কি নিশ্চিত যে এই প্লেয়ার মুছে ফেলতে চান?')) {
-                players = players.filter(x => x.id !== id);
-                savePlayers();
-                renderAll();
-                showToast('প্লেয়ার মুছে ফেলা হয়েছে!', false);
-            }
-        }
-
-        function populateTeamPlayerSelection() {
-            const teamAContainer = document.getElementById('teamASelectContainer');
-            const teamBContainer = document.getElementById('teamBSelectContainer');
-
-            teamAContainer.innerHTML = '';
-            teamBContainer.innerHTML = '';
-
-            players.forEach(p => {
-                const itemA = `
-                    <label class="flex items-center justify-between text-xs text-slate-200 hover:bg-slate-900 p-1.5 rounded cursor-pointer">
-                        <span class="flex items-center space-x-2">
-                            <input type="checkbox" value="${p.id}" class="teamA-cb rounded border-slate-700 bg-slate-800 text-emerald-500 focus:ring-0" onchange="updateScorerSelection()">
-                            <span>${p.name}</span>
-                        </span>
-                        <span class="text-[10px] text-slate-500">${p.position}</span>
-                    </label>
-                `;
-                const itemB = `
-                    <label class="flex items-center justify-between text-xs text-slate-200 hover:bg-slate-900 p-1.5 rounded cursor-pointer">
-                        <span class="flex items-center space-x-2">
-                            <input type="checkbox" value="${p.id}" class="teamB-cb rounded border-slate-700 bg-slate-800 text-amber-500 focus:ring-0" onchange="updateScorerSelection()">
-                            <span>${p.name}</span>
-                        </span>
-                        <span class="text-[10px] text-slate-500">${p.position}</span>
-                    </label>
-                `;
-
-                teamAContainer.innerHTML += itemA;
-                teamBContainer.innerHTML += itemB;
-            });
-
-            updateScorerSelection();
-        }
-
-        function updateScorerSelection() {
-            const selectedA = Array.from(document.querySelectorAll('.teamA-cb:checked')).map(cb => cb.value);
-            const selectedB = Array.from(document.querySelectorAll('.teamB-cb:checked')).map(cb => cb.value);
-
-            const allSelectedIds = [...new Set([...selectedA, ...selectedB])];
-            const scorersContainer = document.getElementById('scorersContainer');
-
-            if (allSelectedIds.length === 0) {
-                scorersContainer.innerHTML = `<p class="text-xs text-slate-500 italic">উভয় টিম থেকে প্লেয়ার সিলেক্ট করুন...</p>`;
-                return;
-            }
-
-            scorersContainer.innerHTML = '';
-            allSelectedIds.forEach(pId => {
-                const player = players.find(x => x.id === pId);
-                if (!player) return;
-
-                const row = document.createElement('div');
-                row.className = "flex flex-wrap items-center justify-between bg-slate-950 p-2 rounded-lg border border-slate-800 text-xs gap-2";
-                row.innerHTML = `
-                    <span class="font-medium text-slate-200 w-32 truncate">${player.name}</span>
-                    <div class="flex items-center space-x-3">
-                        <div class="flex items-center space-x-1">
-                            <span class="text-[10px] text-slate-400">গোল:</span>
-                            <input type="number" min="0" value="0" data-player="${player.id}" class="scorer-goals w-12 bg-slate-800 border border-slate-700 text-center rounded text-white p-1">
-                        </div>
-                        <div class="flex items-center space-x-1">
-                            <span class="text-[10px] text-slate-400">অ্যাসিস্ট:</span>
-                            <input type="number" min="0" value="0" data-player="${player.id}" class="scorer-assists w-12 bg-slate-800 border border-slate-700 text-center rounded text-white p-1">
-                        </div>
-                    </div>
-                `;
-                scorersContainer.appendChild(row);
-            });
-        }
-
-        function handleMatchSubmit(e) {
-            e.preventDefault();
-
-            const date = document.getElementById('matchDate').value;
-            const teamAName = document.getElementById('teamAName').value.trim() || 'Team Green';
-            const teamBName = document.getElementById('teamBName').value.trim() || 'Team Red';
-            const teamAScore = parseInt(document.getElementById('teamAScore').value) || 0;
-            const teamBScore = parseInt(document.getElementById('teamBScore').value) || 0;
-
-            const teamAPlayers = Array.from(document.querySelectorAll('.teamA-cb:checked')).map(cb => cb.value);
-            const teamBPlayers = Array.from(document.querySelectorAll('.teamB-cb:checked')).map(cb => cb.value);
-
-            if (teamAPlayers.length === 0 || teamBPlayers.length === 0) {
-                showToast('উভয় দল থেকে অন্তত ১ জন প্লেয়ার নির্বাচন করুন!', false);
-                return;
-            }
-
-            let winner = 'Draw';
-            if (teamAScore > teamBScore) winner = 'Team A';
-            else if (teamBScore > teamAScore) winner = 'Team B';
-
-            const scorers = [];
-            const goalInputs = document.querySelectorAll('.scorer-goals');
-            const assistInputs = document.querySelectorAll('.scorer-assists');
-
-            goalInputs.forEach(gInput => {
-                const pId = gInput.getAttribute('data-player');
-                const goalsVal = parseInt(gInput.value) || 0;
-                const aInput = Array.from(assistInputs).find(i => i.getAttribute('data-player') === pId);
-                const assistsVal = aInput ? (parseInt(aInput.value) || 0) : 0;
-
-                if (goalsVal > 0 || assistsVal > 0) {
-                    scorers.push({
-                        playerId: pId,
-                        goals: goalsVal,
-                        assists: assistsVal
-                    });
-                }
-            });
-
-            // Recalculate stats
-            players = players.map(p => {
-                let isA = teamAPlayers.includes(p.id);
-                let isB = teamBPlayers.includes(p.id);
-
-                if (!isA && !isB) return p;
-
-                let updatedGames = p.games + 1;
-                let updatedWins = p.wins;
-
-                if (winner === 'Team A' && isA) updatedWins++;
-                if (winner === 'Team B' && isB) updatedWins++;
-
-                const contrib = scorers.find(s => s.playerId === p.id);
-                let updatedGoals = p.goals + (contrib ? contrib.goals : 0);
-                let updatedAssists = p.assists + (contrib ? contrib.assists : 0);
-
-                return {
-                    ...p,
-                    games: updatedGames,
-                    wins: updatedWins,
-                    goals: updatedGoals,
-                    assists: updatedAssists
-                };
-            });
-
-            const newMatch = {
-                id: 'm_' + Date.now(),
-                date,
-                teamA: { name: teamAName, score: teamAScore, players: teamAPlayers },
-                teamB: { name: teamBName, score: teamBScore, players: teamBPlayers },
-                winner,
-                scorers
-            };
-
-            matches.unshift(newMatch);
-
-            savePlayers();
-            saveMatches();
-            renderAll();
-
-            showToast('ম্যাচের নতুন তথ্য ও প্লেয়ার স্ট্যাটস সেভ হয়েছে!');
-            document.getElementById('addMatchForm').reset();
-            switchTab('matches');
-        }
-
-        function renderMatchHistory() {
-            const matchesContainer = document.getElementById('matches-list');
-            matchesContainer.innerHTML = '';
-
-            if (matches.length === 0) {
-                matchesContainer.innerHTML = `<div class="card-bg p-8 rounded-2xl text-center text-slate-400">এখনো কোনো ম্যাচের তথ্য রেকর্ড করা হয়নি।</div>`;
-                return;
-            }
-
-            matches.forEach(m => {
-                const getPlayerNames = (ids) => ids.map(id => {
-                    const p = players.find(x => x.id === id);
-                    return p ? p.name : 'Unknown';
-                }).join(', ');
-
-                let winnerBadge = m.winner === 'Team A' 
-                    ? `<span class="bg-emerald-950 text-emerald-400 border border-emerald-700 text-xs px-2.5 py-1 rounded-full font-bold">${m.teamA.name} জয়ী</span>` 
-                    : m.winner === 'Team B' 
-                    ? `<span class="bg-amber-950 text-amber-400 border border-amber-700 text-xs px-2.5 py-1 rounded-full font-bold">${m.teamB.name} জয়ী</span>`
-                    : `<span class="bg-slate-800 text-slate-300 border border-slate-700 text-xs px-2.5 py-1 rounded-full font-bold">ড্র (Draw)</span>`;
-
-                const matchCard = document.createElement('div');
-                matchCard.className = "card-bg p-5 rounded-2xl border border-slate-800 shadow-xl space-y-4";
-                
-                let scorersSummary = 'কোন গোলদাতা নেই';
-                if (m.scorers && m.scorers.length > 0) {
-                    scorersSummary = m.scorers.map(s => {
-                        const p = players.find(x => x.id === s.playerId);
-                        const name = p ? p.name : 'Player';
-                        let text = `${name} (${s.goals}⚽`;
-                        if (s.assists > 0) text += `, ${s.assists}🅰️`;
-                        text += ')';
-                        return text;
-                    }).join(' | ');
-                }
-
-                matchCard.innerHTML = `
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-3 gap-2">
-                        <div class="flex items-center space-x-2">
-                            <i class="fa-regular fa-calendar-check text-emerald-400"></i>
-                            <span class="text-xs font-semibold text-slate-300">${m.date} (শুক্রবার)</span>
-                        </div>
-                        <div>${winnerBadge}</div>
-                    </div>
-
-                    <div class="grid grid-cols-3 items-center text-center bg-slate-950/70 p-4 rounded-xl border border-slate-800">
-                        <div>
-                            <h4 class="font-bold text-emerald-400 text-sm md:text-base">${m.teamA.name}</h4>
-                            <p class="text-[10px] text-slate-400 mt-1">${getPlayerNames(m.teamA.players)}</p>
-                        </div>
-
-                        <div class="text-2xl md:text-3xl font-black text-white tracking-wider">
-                            ${m.teamA.score} <span class="text-slate-600 text-lg mx-1">-</span> ${m.teamB.score}
-                        </div>
-
-                        <div>
-                            <h4 class="font-bold text-amber-400 text-sm md:text-base">${m.teamB.name}</h4>
-                            <p class="text-[10px] text-slate-400 mt-1">${getPlayerNames(m.teamB.players)}</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center space-x-2 text-xs text-slate-400 bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/80">
-                        <i class="fa-solid fa-futbol text-amber-400"></i>
-                        <span><strong>অবদান:</strong> ${scorersSummary}</span>
-                    </div>
-                `;
-
-                matchesContainer.appendChild(matchCard);
-            });
-        }
-
-        // Export/Import and Code Download Logic
-        function exportJSONData() {
-            const data = {
-                players,
-                matches,
-                exportedAt: new Date().toISOString()
-            };
-            const jsonStr = JSON.stringify(data, null, 2);
-            const blob = new Blob([jsonStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `friday_football_backup_${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showToast('JSON ডাটা ফাইল সেভ করা হয়েছে!');
-        }
-
-        function importJSONData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    if (parsed.players && Array.isArray(parsed.players)) {
-                        players = parsed.players;
-                        matches = parsed.matches || [];
-                        savePlayers();
-                        saveMatches();
-                        renderAll();
-                        showToast('ব্যাকআপ ফাইল থেকে সফলভাবে ডাটা রিস্টোর করা হয়েছে!');
-                    } else {
-                        showToast('অবৈধ ফাইল ফরম্যাট!', false);
-                    }
-                } catch (err) {
-                    showToast('ফাইল রিড করতে সমস্যা হয়েছে!', false);
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function downloadHTMLApp() {
-            const htmlContent = document.documentElement.outerHTML;
-            const blob = new Blob([htmlContent], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'index.html';
-            a.click();
-            URL.revokeObjectURL(url);
-            showToast('index.html ফাইল ডাউনলোড সম্পন্ন হয়েছে!');
-        }
-
-        function resetDataToDemo() {
-            if (confirm('আপনি কি নিশ্চিত যে সব ডাটা মুছে প্রাথমিক ডেমো ডাটায় ফিরে যেতে চান?')) {
-                players = [...defaultPlayers];
-                matches = [...defaultMatches];
-                savePlayers();
-                saveMatches();
-                renderAll();
-                showToast('ডাটা রিসেট সম্পন্ন হয়েছে!');
-            }
-        }
+        renderPlayers();
     </script>
 </body>
 </html>
